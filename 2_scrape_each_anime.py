@@ -17,7 +17,6 @@ def scrape_anime():
     last_line = False
 
     if os.path.exists('ratings.csv'):
-        # get last line of csv
         with open('ratings.csv', 'r') as f:
             for line in f:
                 if line.strip() and line.strip() != ratings_cols:
@@ -52,6 +51,14 @@ def scrape_anime():
     for title, url in data:
         driver.get(url)
         wait = WebDriverWait(driver, 180)
+
+        try:
+            driver.find_element(By.CLASS_NAME, "error-text")
+        except NoSuchElementException:
+            pass
+        else:
+            print('error-text class found...resetting')
+            raise Exception("Error text element found")
 
         try:
             wait.until(EC.presence_of_element_located((By.CLASS_NAME,
@@ -98,5 +105,13 @@ def scrape_anime():
     driver.quit()
 
 
-if __name__ == '__main__':
-    scrape_anime()
+# if __name__ == '__main__':
+#     keep_going = True
+#
+#     while keep_going:
+#         try:
+#             scrape_anime()
+#             keep_going = False
+#         except Exception as e:
+#             print('error...')
+#             print(e)
